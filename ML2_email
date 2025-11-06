@@ -6,54 +6,26 @@ from sklearn.neighbors import KNeighborsClassifier
 # Load dataset
 df = pd.read_csv("emails.csv")
 df.head()
-Email No.	the	to	ect	and	for	of	a	you	hou	...	connevey	jay	valued	lay	infrastructure	military	allowing	ff	dry	Prediction
-0	Email 1	0	0	1	0	0	0	2	0	0	...	0	0	0	0	0	0	0	0	0	0
-1	Email 2	8	13	24	6	6	2	102	1	27	...	0	0	0	0	0	0	0	1	0	0
-2	Email 3	0	0	1	0	0	0	8	0	0	...	0	0	0	0	0	0	0	0	0	0
-3	Email 4	0	5	22	0	5	1	51	2	10	...	0	0	0	0	0	0	0	0	0	0
-4	Email 5	7	6	17	1	5	2	57	0	9	...	0	0	0	0	0	0	0	1	0	0
-5 rows × 3002 columns
+
 
 df.isnull().sum()
-Email No.     0
-the           0
-to            0
-ect           0
-and           0
-             ..
-military      0
-allowing      0
-ff            0
-dry           0
-Prediction    0
-Length: 3002, dtype: int64
+
 X = df.iloc[:,1:3001]  # word frequency features
 X
-the	to	ect	and	for	of	a	you	hou	in	...	enhancements	connevey	jay	valued	lay	infrastructure	military	allowing	ff	dry
-0	0	0	1	0	0	0	2	0	0	0	...	0	0	0	0	0	0	0	0	0	0
-1	8	13	24	6	6	2	102	1	27	18	...	0	0	0	0	0	0	0	0	1	0
-2	0	0	1	0	0	0	8	0	0	4	...	0	0	0	0	0	0	0	0	0	0
-3	0	5	22	0	5	1	51	2	10	1	...	0	0	0	0	0	0	0	0	0	0
-4	7	6	17	1	5	2	57	0	9	3	...	0	0	0	0	0	0	0	0	1	0
-...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
-5167	2	2	2	3	0	0	32	0	0	5	...	0	0	0	0	0	0	0	0	0	0
-5168	35	27	11	2	6	5	151	4	3	23	...	0	0	0	0	0	0	0	0	1	0
-5169	0	0	1	1	0	0	11	0	0	1	...	0	0	0	0	0	0	0	0	0	0
-5170	2	7	1	0	2	1	28	2	0	8	...	0	0	0	0	0	0	0	0	1	0
-5171	22	24	5	1	6	5	148	8	2	23	...	0	0	0	0	0	0	0	0	0	0
-5172 rows × 3000 columns
+
 
 Y = df.iloc[:,-1].values # 1 = spam, 0 = not spam
 Y
-array([0, 0, 0, ..., 1, 1, 0], shape=(5172,))
+
 # Split data 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
-from sklearn.metrics import classification_report, confusion_matrix
 
+from sklearn.metrics import classification_report, confusion_matrix
 # -------- Support Vector Machine --------
 svc = SVC(C=1.0, kernel='rbf', gamma='auto')
 svc.fit(X_train, y_train)
 svc_pred = svc.predict(X_test)
+
 SVM Accuracy: 0.8932714617169374
 SVM Classification Report:
                precision    recall  f1-score   support
@@ -68,9 +40,11 @@ weighted avg       0.89      0.89      0.89      1293
 SVM Confusion Matrix:
  [[872  41]
  [ 97 283]]
+
 print("SVM Accuracy:", accuracy_score(y_test, svc_pred))
 print("SVM Classification Report:\n", classification_report(y_test, svc_pred))
 print("SVM Confusion Matrix:\n", confusion_matrix(y_test, svc_pred))
+
 SVM Accuracy: 0.8932714617169374
 SVM Classification Report:
                precision    recall  f1-score   support
@@ -85,13 +59,27 @@ weighted avg       0.89      0.89      0.89      1293
 SVM Confusion Matrix:
  [[872  41]
  [ 97 283]]
+
+# 📊 5️⃣ Plot: Accuracy Comparison
+# -------------------------------------------------------------
+plt.figure(figsize=(6, 4))
+plt.bar(['SVM', 'KNN'], [svc_acc, knn_acc], color=['skyblue', 'lightgreen'])
+plt.title("Model Accuracy Comparison")
+plt.ylabel("Accuracy Score")
+plt.ylim(0, 1)
+for i, acc in enumerate([svc_acc, knn_acc]):
+    plt.text(i, acc + 0.01, f"{acc:.2f}", ha='center', fontsize=12)
+plt.show()
+
 # -------- K-Nearest Neighbors --------
 knn = KNeighborsClassifier(n_neighbors=7)
 knn.fit(X_train, y_train)
 knn_pred = knn.predict(X_test)
+
 print("KNN Accuracy:", knn.score(X_test, y_test))
 print("KNN Classification Report:\n", classification_report(y_test, knn_pred))
 print("KNN Confusion Matrix:\n", confusion_matrix(y_test, knn_pred))
+
 KNN Accuracy: 0.8685990338164251
 KNN Classification Report:
                precision    recall  f1-score   support
